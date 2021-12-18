@@ -1,21 +1,39 @@
 .typer-container {
-    margin: 0 auto;
     background-color: inherit;
-    width: fit-content;
-    height: 1000px;
+    
+    margin: 0 auto;
 
+    width: 60%;
+    min-width: 1000px;
+    height: 100%;
+
+    .header-container {
+        height: 10% !important;
+        .header {
+
+        }
+    }
+    
     .text-container{
-        width: 1000px;
-        font-size: 24px;
+        height: 20% !important;
+        font-size: 20px;
 
         background-color: inherit;
-        
+
         .highlight {
             background-color: $color-blue;
+            &.correct{
+                background-color: $color-green !important;
+            }
+            &.incorrect{
+                background-color: $color-red !important;
+            }
         }
+       
     }
 
     .input-container {
+        height: 40% !important;
         .input-field {
             width: 100%;
             height: 100%;

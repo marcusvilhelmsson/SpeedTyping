@@ -1,14 +1,20 @@
 <template>
     <div class="container typer-container">
-        <h1 class="text-center row h-10">SpeedTyper</h1>
-        <div class="row h-20 text-container">
+        <div class="row text-center header-container mt-2">
+            <h1 class="header">SpeedTyper <span class="badge bg-secondary">NICE!</span></h1>
+        </div>
+        <div class="row h-25 text-container">
             <p><span v-for="word in words" :key="word.id">
-                <span v-bind:class="{highlight: word.text === this.currentWord}">{{word.text}}</span>
+                <span v-bind:class="{
+                    highlight: word.text === this.currentWord && word.id === this.counter, 
+                    correct: word.text === this.currentWord && word.id === this.counter && this.currentWord === this.input,
+                    incorrect: word.text === this.currentWord && word.id === this.counter && this.currentWord.length < this.input.length}"
+                    >{{word.text}}</span>
                 {{" "}}
             </span>
             </p>
         </div>
-        <div class="row h-40 input-container">
+        <div class="row h-50 input-container">
             <form v-on:keydown.space="nextWord" v-on:submit.prevent>
                 <input placeholder="..." type="text" class="input-field" v-model="input" autofocus>
             </form>
@@ -54,7 +60,7 @@ export default {
     },
     data: function(){
         return {
-            paragraph: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Asperiores ipsam sequi, quis minus architecto temporibus nihil officiis quisquam nisi laudantium doloremque voluptatibus laborum est, aspernatur ratione quibusdam. Asperiores, natus corporis!",
+            paragraph: "I am enough of an artist to draw freely upon my imagination. Imagination is more important than knowledge. Knowledge is limited. Imagination encircles the world. - Albert Einstein",
             input: "",
             counter: 0,
         }
