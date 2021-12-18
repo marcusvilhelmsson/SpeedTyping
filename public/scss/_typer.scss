@@ -1,5 +1,35 @@
 .typer-container {
-    width: 100%;
-    height: 100%;
-    background-color: white;
+    margin: 0 auto;
+    background-color: inherit;
+    width: fit-content;
+    height: 1000px;
+
+    .text-container{
+        width: 1000px;
+        font-size: 24px;
+
+        background-color: inherit;
+        
+        .highlight {
+            background-color: $color-blue;
+        }
+    }
+
+    .input-container {
+        .input-field {
+            width: 100%;
+            height: 100%;
+            font-size: 65px;
+            color: $color-white;
+
+            background-color: inherit;
+            border: 0;
+            -webkit-appearance: none;
+            &:focus {
+                border:0;
+                outline: none;
+            }
+        }
+    }
+   
 }
