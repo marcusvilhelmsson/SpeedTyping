@@ -5,16 +5,19 @@
         </div>
         <div class="row h-25 text-container">
             <div v-if="countdown > 0" class="countdown"><span class="badge bg-secondary">{{countdown}}</span></div>
-            <p v-else><span v-for="word in words" :key="word.id">
-                <span v-bind:class="{
-                    highlight: word.text === this.currentWord && word.id === this.counter, 
-                    correct: word.text === this.currentWord && word.id === this.counter && this.currentWord === this.input,
-                    incorrect: word.text === this.currentWord && word.id === this.counter && this.currentWord.length < this.input.length}"
-                    >{{word.text}}</span>
-                {{" "}}
-            </span>
-            </p>
-
+            <div v-else>
+                <p>
+                    <span v-for="word in words" :key="word.id">
+                        <span v-bind:class="{
+                            highlight: word.text === this.currentWord && word.id === this.counter, 
+                            correct: word.text === this.currentWord && word.id === this.counter && this.currentWord === this.input,
+                            incorrect: word.text === this.currentWord && word.id === this.counter && this.currentWord.length < this.input.length}"
+                            >{{word.text}}</span>
+                        {{" "}}
+                    </span>
+                </p>
+                <p class="author">- {{author}}</p>
+            </div>
         </div>
         <div class="row h-50 input-container">
             <form v-on:keydown.space="nextWord" v-on:submit.prevent>
@@ -30,6 +33,7 @@
 
 <script>
 import highlightWords from 'highlight-words';
+import axios from 'axios'
 
 export default {
     name: 'Typer',
@@ -65,17 +69,21 @@ export default {
             })
         }
     },
+    mounted(){
+        this.reload()
+    },
     data: function(){
         return {
-            paragraph: "Hello World! Have a great day",
+            paragraph: "Choke me like you hate me, but you love me. Lowkey wanna date me when you fuck me (uwu). Touch me with the lights off and my chains on. Baby, I'm not the right one you should wait on",
+            author: "",
             input: "",
             counter: 0,
-            countdown: 5
+            countdown: 3
         }
     },
     methods: {
         nextWord(e) {
-            e.preventDefault()
+            if(e) e.preventDefault()
             if(this.input == this.currentWord ) {
                 if(this.counter < (this.words.length - 1)){
                     this.counter++
@@ -88,12 +96,20 @@ export default {
                 this.input = ""
             }
         },
-        reset(e){
-            e.preventDefault()
+
+        reset(e) {
+            if(e) e.preventDefault()
             this.counter = 0
             this.input = ""
+            this.countdown = 3
             this.countDownTimer()
         },
+
+        async reload(e) {
+            this.getNewQuote()
+            this.reset(e)
+        },
+
         countDownTimer() {
             if(this.countdown > 0) {
                 setTimeout(() => {
@@ -101,6 +117,27 @@ export default {
                     this.countDownTimer()
                 }, 1000)
             }
+        },
+
+        async getNewQuote(){
+            let context = this
+            
+            var options = {
+                method: 'GET',
+                url: 'https://quotes15.p.rapidapi.com/quotes/random/',
+                headers: {
+                    'x-rapidapi-host': 'quotes15.p.rapidapi.com',
+                    'x-rapidapi-key': 'b8075e33fcmshd4b8d70bedd73b2p1a9b93jsnc9376d4ff162'
+                }
+            };
+
+            await axios.request(options).then(function (response) {
+                console.log(response.data)
+                context.paragraph = response.data.content
+                context.author = response.data.originator.name
+            }).catch(function (error) {
+                console.error(error);
+            });
         }
     }
 }
