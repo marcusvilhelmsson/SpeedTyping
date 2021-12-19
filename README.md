@@ -1,4 +1,4 @@
-# speedtyping
+# SpeedTyping
 
 ## Project setup
 ```
