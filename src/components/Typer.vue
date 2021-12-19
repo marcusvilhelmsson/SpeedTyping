@@ -1,7 +1,7 @@
 <template>
     <div class="container typer-container">
         <div class="row text-center header-container mt-2">
-            <h1 class="header">SpeedTyper</h1>
+            <h1 class="header">Speed<span class="alt">Typer</span></h1>
         </div>
         <div class="row h-25 text-container">
             <div v-if="countdown > 0" class="countdown"><span class="badge bg-secondary">{{countdown}}</span></div>
@@ -24,7 +24,7 @@
                 <input placeholder="..." type="text" class="input-field" v-model="input" autofocus>
             </form>
         </div>
-        <div class="controls-container">
+        <div class="controls-container text-center">
             <button type="button" @click="reload" class="btn btn-secondary btn-reload">Reload</button>
             <button type="button" @click="reset" class="btn btn-secondary btn-reset">Reset</button>
         </div>
@@ -46,9 +46,11 @@ export default {
             return this.input   
         },
         words: function () {
-            let splitWords = this.text.split(" ") 
+            let splitWords = this.text.split(/[ ]+/) 
             let words = []
-            
+
+            splitWords = this.filterText(splitWords)
+
             for(let i = 0 ; i < splitWords.length; i++) {
                 let word = {
                     id : i,
@@ -74,7 +76,7 @@ export default {
     },
     data: function(){
         return {
-            paragraph: "Choke me like you hate me, but you love me. Lowkey wanna date me when you fuck me (uwu). Touch me with the lights off and my chains on. Baby, I'm not the right one you should wait on",
+            paragraph: "",
             author: "",
             input: "",
             counter: 0,
@@ -82,19 +84,29 @@ export default {
         }
     },
     methods: {
-        nextWord(e) {
+        async nextWord(e) {
             if(e) e.preventDefault()
             if(this.input == this.currentWord ) {
                 if(this.counter < (this.words.length - 1)){
                     this.counter++
                 }
                 else {
-                    console.log("Done")
+                    await this.getNewQuote()
                     this.input = ""
                     this.counter = 0
                 }
                 this.input = ""
             }
+        },
+
+        filterText(array){
+            const filteredCharacters = ['‘','—']
+            for(let filteredCharacter in filteredCharacters) {
+                if(array.includes(filteredCharacter)) {
+                    array.splice(array.indexOf(filteredCharacter), 1); 
+                }
+            }
+            return array
         },
 
         reset(e) {
@@ -138,6 +150,7 @@ export default {
             }).catch(function (error) {
                 console.error(error);
             });
+            
         }
     }
 }
