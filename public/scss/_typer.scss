@@ -16,10 +16,10 @@
     
     .text-container{
         height: 20% !important;
-        font-size: 20px;
+        font-size: $font-size-medium;
 
         background-color: inherit;
-
+        text-align: center;
         .highlight {
             background-color: $color-blue;
             &.correct{
@@ -37,16 +37,24 @@
         .input-field {
             width: 100%;
             height: 100%;
-            font-size: 65px;
+            font-size: $font-size-mega;
             color: $color-white;
 
             background-color: inherit;
             border: 0;
+            text-align: center;
             -webkit-appearance: none;
             &:focus {
                 border:0;
                 outline: none;
             }
+        }
+    }
+
+    .controls-container {
+
+        .btn-reload, .btn-reset { 
+            margin-right: $spacing-medium;
         }
     }
    
