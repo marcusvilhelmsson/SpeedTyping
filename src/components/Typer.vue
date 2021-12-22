@@ -17,7 +17,7 @@
                 </p>
                 <p class="author">- {{author}}</p>
             </div>
-            <div v-if="countdown > 0" class="countdown"><span class="badge bg-secondary">{{countdown}}</span></div>
+            <div v-if="countdown > 0" class="countdown"><span class="badge bg-danger">{{countdown}}</span></div>
         </div>
         <div class="row input-container">
             <form v-on:keydown.space="nextWord" v-on:submit.prevent>
@@ -132,7 +132,7 @@ export default {
         },
 
         filterText(array){
-            const filteredCharacters = ['‘','—']
+            const filteredCharacters = ['‘','—','— ']
             for(let filteredCharacter in filteredCharacters) {
                 if(array.includes(filteredCharacter)) {
                     array.splice(array.indexOf(filteredCharacter), 1); 
