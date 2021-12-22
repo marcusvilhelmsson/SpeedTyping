@@ -3,7 +3,7 @@
         <div class="row text-center header-container mt-2">
             <h1 class="header">Speed<span class="alt">Typer</span></h1>
         </div>
-        <div class="row h-25 text-container">
+        <div class="row text-container">
             <div>
                 <p>
                     <span v-for="word in words" :key="word.id">
@@ -19,18 +19,25 @@
             </div>
             <div v-if="countdown > 0" class="countdown"><span class="badge bg-secondary">{{countdown}}</span></div>
         </div>
-        <div class="row h-50 input-container">
+        <div class="row input-container">
             <form v-on:keydown.space="nextWord" v-on:submit.prevent>
                 <input placeholder="..." type="text" ref="inputField" class="input-field" v-model="input" autofocus :disabled="countdown > 0">
             </form>
+        </div>
+        <div class="row controls-container mt-5 text-center">
+            <p class="col-12 mx-auto icon-container">
+               <font-awesome-icon
+                class="icon"
+                size="lg"
+                :icon="['fa', 'sync']"
+                @click="reload"  />
+            </p>
+        </div>
+        <div class="row information-container">
             <ul>
                 <li>Latest WPM: {{latestWpm}}</li>
                 <li>Highest WPM: {{highestWpm}}</li>
             </ul>
-        </div>
-        <div class="controls-container text-center">
-            <button type="button" @click="reload" class="btn btn-secondary btn-reload">Reload</button>
-            <button type="button" @click="reset" class="btn btn-secondary btn-reset">Reset</button>
         </div>
     </div>
 </template>
@@ -100,9 +107,9 @@ export default {
         getWpm() {
             if(this.startTime) {
                 let currentTime = new Date()
-                let minutes = this.getMinutesBetween(currentTime, this.startTime)
+                let time = this.getMinutesBetween(currentTime, this.startTime)
                 let characters = this.getCharacterCount()
-                return ((characters / 5) / minutes) 
+                return ((characters / 5) / time) 
             }
             else {
                 return 0
@@ -110,7 +117,7 @@ export default {
         },
 
         updateWpm() {
-            const wpm = this.getWpm() 
+            const wpm = Math.round(this.getWpm() * 10) / 10
             this.latestWpm = wpm
             if(this.highestWpm < wpm) this.highestWpm = wpm
         },
@@ -183,8 +190,8 @@ export default {
 
             await axios.request(options).then(function (response) {
                 console.log(response.data)
-                //context.paragraph = response.data.content
-                context.paragraph = "This is a test string"
+                context.paragraph = response.data.content
+                //context.paragraph = "This is a test string"
                 context.author = response.data.originator.name
             }).catch(function (error) {
                 console.error(error);
