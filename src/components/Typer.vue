@@ -4,8 +4,7 @@
             <h1 class="header">Speed<span class="alt">Typer</span></h1>
         </div>
         <div class="row h-25 text-container">
-            <div v-if="countdown > 0" class="countdown"><span class="badge bg-secondary">{{countdown}}</span></div>
-            <div v-else>
+            <div>
                 <p>
                     <span v-for="word in words" :key="word.id">
                         <span v-bind:class="{
@@ -18,11 +17,16 @@
                 </p>
                 <p class="author">- {{author}}</p>
             </div>
+            <div v-if="countdown > 0" class="countdown"><span class="badge bg-secondary">{{countdown}}</span></div>
         </div>
         <div class="row h-50 input-container">
             <form v-on:keydown.space="nextWord" v-on:submit.prevent>
-                <input placeholder="..." type="text" class="input-field" v-model="input" autofocus>
+                <input placeholder="..." type="text" ref="inputField" class="input-field" v-model="input" autofocus :disabled="countdown > 0">
             </form>
+            <ul>
+                <li>Latest WPM: {{latestWpm}}</li>
+                <li>Highest WPM: {{highestWpm}}</li>
+            </ul>
         </div>
         <div class="controls-container text-center">
             <button type="button" @click="reload" class="btn btn-secondary btn-reload">Reload</button>
@@ -32,7 +36,6 @@
 </template>
 
 <script>
-import highlightWords from 'highlight-words';
 import axios from 'axios'
 
 export default {
@@ -62,13 +65,6 @@ export default {
         },
         currentWord: function() {
             return this.words[this.counter].text
-        },
-        chunks: function() {
-            return highlightWords({
-                text: this.paragraph,
-                query: this.input,
-                matchExactly: true,
-            })
         }
     },
     mounted(){
@@ -80,7 +76,10 @@ export default {
             author: "",
             input: "",
             counter: 0,
-            countdown: 3
+            countdown: 3,
+            highestWpm: 0,
+            latestWpm: 0,
+            startTime: 0
         }
     },
     methods: {
@@ -91,12 +90,38 @@ export default {
                     this.counter++
                 }
                 else {
-                    await this.getNewQuote()
-                    this.input = ""
-                    this.counter = 0
+                    this.updateWpm()
+                    this.reload()
                 }
                 this.input = ""
             }
+        },
+
+        getWpm() {
+            if(this.startTime) {
+                let currentTime = new Date()
+                let minutes = this.getMinutesBetween(currentTime, this.startTime)
+                let characters = this.getCharacterCount()
+                return ((characters / 5) / minutes) 
+            }
+            else {
+                return 0
+            }
+        },
+
+        updateWpm() {
+            const wpm = this.getWpm() 
+            this.latestWpm = wpm
+            if(this.highestWpm < wpm) this.highestWpm = wpm
+        },
+
+        getCharacterCount() {
+            let characterCount = 0
+            const words = this.words
+            for(const word in words){
+                characterCount += words[word].text.length
+            }
+            return characterCount
         },
 
         filterText(array){
@@ -128,10 +153,23 @@ export default {
                     this.countdown -= 1
                     this.countDownTimer()
                 }, 1000)
+            } else {
+                this.$nextTick(() => this.$refs.inputField.focus())
+                this.startTimer()
             }
         },
 
-        async getNewQuote(){
+        startTimer() {
+            this.startTime = new Date()
+        },
+
+        getMinutesBetween(currentTime, startTime) {
+            const msDiff = currentTime - startTime 
+            const minutes = (msDiff/1000/60)
+            return minutes
+        },
+
+        async getNewQuote() {
             let context = this
             
             var options = {
@@ -145,7 +183,8 @@ export default {
 
             await axios.request(options).then(function (response) {
                 console.log(response.data)
-                context.paragraph = response.data.content
+                //context.paragraph = response.data.content
+                context.paragraph = "This is a test string"
                 context.author = response.data.originator.name
             }).catch(function (error) {
                 console.error(error);
